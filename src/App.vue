@@ -1,47 +1,68 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
+  <div class="container mx-auto pt-10">
+    <v-table
+      :table-data="state.tableData"
+      :column="state.sortCol"
+      :order="state.order"
+      @sort="orderHandler"
+    />
+    <v-pagination
+      v-if="state.pagination"
+      :v-model="state.pagination.current_page"
+      :pages="state.pagination.total_pages"
+      @update:modelValue="paginationHandler"
+      class="p-2 flex justify-center"
+    ></v-pagination>
+  </div>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <loader />
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
+<script setup>
+import Loader from "@/components/Loader.vue";
+import VTable from "@/components/VTable.vue";
+import VPagination from "@/components/VPagination.vue";
+
+import api from "@/modules/api";
+import {onMounted, reactive} from "vue";
+import { useLoadStore } from "@/stores/load";
+const load = useLoadStore();
+
+const state = reactive({
+  tableData: [],
+  pagination: null,
+  sortCol: "",
+  order: "",
+});
+
+onMounted(async () => {
+  load.handleLoad();
+  const { data } = await api.get("/table/");
+  state.tableData = data.rows;
+  state.pagination = data.pagination;
+  load.handleLoad();
+});
+
+async function orderHandler(event) {
+  load.handleLoad();
+  state.sortCol = event.column;
+  state.order = event.order;
+  const { data } = await api.get(`/table/?col=${state.sortCol}&order=${state.order}`);
+
+  setTableData(data.rows, data.pagination);
+  load.handleLoad();
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+async function paginationHandler(page) {
+  load.handleLoad();
+  const { data } = await api.get(`/table/?page=${page}${state.sortCol ? '&col=' + state.sortCol + '&order=' + state.order : ''}`);
+
+  setTableData(data.rows, data.pagination);
+  load.handleLoad();
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+function setTableData(tableData, pagination) {
+  state.tableData = tableData;
+  state.pagination = pagination;
 }
-</style>
+</script>
