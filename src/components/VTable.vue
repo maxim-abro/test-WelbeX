@@ -72,9 +72,8 @@ const columns = [
 ];
 
 function sortCol(col) {
-  console.log(col)
   if (col === "date") {
-    return
+    return;
   }
   if (col === props.column) {
     if (props.order === "ASC") {
