@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const url = "http://localhost:4000/";
+const url = "https://za-halyavoi.ru/api/";
 
 export const api = axios.create({
   baseURL: url,
