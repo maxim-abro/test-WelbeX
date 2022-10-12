@@ -23,7 +23,7 @@
 
     <tbody class="bg-white divide-y divide-gray-100">
     <tr v-for="elem of tableData" :key="elem.id" class="cursor-pointer hover:bg-gray-100">
-      <td class="px-3 py-2 whitespace-no-wrap">{{ elem.date }}</td>
+      <td class="px-3 py-2 whitespace-no-wrap">{{ elem.date.split("-").reverse().join(".") }}</td>
       <td class="px-3 py-2 whitespace-no-wrap">{{ elem.title }}</td>
       <td class="px-3 py-2 whitespace-no-wrap">{{ elem.count }}</td>
       <td class="px-3 py-2 whitespace-no-wrap">{{ elem.distance }}</td>

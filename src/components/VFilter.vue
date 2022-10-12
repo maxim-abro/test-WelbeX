@@ -8,7 +8,7 @@
     <option value="" disabled selected>Выберите тип фильтрации</option>
     <option v-for="filter of computedType" :value="filter.value">{{ filter.title }}</option>
   </select>
-  <input v-model="formFilter.valueFilter" type="search" class="w-1/6 border border-2 border-gray-300 focus:outline-0 focus:border-green-600" placeholder="Введите значение">
+  <input v-model="formFilter.valueFilter" :type="formFilter.colFilter !== 'date' ? 'search' : 'date'" class="w-1/6 border border-2 border-gray-300 focus:outline-0 focus:border-green-600" placeholder="Введите значение">
 
   <button type="submit" class="w-1/8 bg-green-600 text-zinc-50 px-2 hover:bg-green-500 active:bg-green-700">Фильтрация</button>
   <button v-if="formFilter.colFilter || formFilter.typeFilter || formFilter.valueFilter" @click="clearFilter" class="w-1/8 bg-zinc-600 text-zinc-50 px-2 hover:bg-zinc-500 active:bg-zinc-700">Очистить</button>

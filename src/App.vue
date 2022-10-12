@@ -61,28 +61,66 @@ onMounted(async () => {
 });
 
 function filterByInteger(data) {
-  if (state.formFilter.valueFilter === "equally") {
-    return data.filter(i => i[state.formFilter.colFilter] === state.formFilter.valueFilter);
+  if (state.formFilter.typeFilter === "equally") {
+    const filteredData = data.filter(i => i[state.formFilter.colFilter] * 1 === state.formFilter.valueFilter * 1);
+    state.pagination.total_elements = filteredData.length;
+    state.pagination.total_pages = Math.ceil(filteredData.length / state.limit);
+    return filteredData;
   }
-  if (state.formFilter.valueFilter === "more") {
-    return data.filter(i => i[state.formFilter.colFilter] > state.formFilter.valueFilter);
+  if (state.formFilter.typeFilter === "more") {
+    const filteredData = data.filter(i => i[state.formFilter.colFilter] * 1 > state.formFilter.valueFilter * 1);
+    state.pagination.total_elements = filteredData.length;
+    state.pagination.total_pages = Math.ceil(filteredData.length / state.limit);
+    return filteredData;
   }
-  if (state.formFilter.valueFilter === "less") {
-    return data.filter(i => i[state.formFilter.colFilter] < state.formFilter.valueFilter);
+  if (state.formFilter.typeFilter === "less") {
+    const filteredData = data.filter(i => i[state.formFilter.colFilter] * 1 < state.formFilter.valueFilter * 1);
+    state.pagination.total_elements = filteredData.length;
+    state.pagination.total_pages = Math.ceil(filteredData.length / state.limit);
+    return filteredData;
   }
 }
 
-function filterByString(data) {
-  console.log(data)
+function filterByString(data) { // работает
   if (state.formFilter.typeFilter === "equally") {
-    return data.filter(i => i[state.formFilter.colFilter].toLowerCase() === state.formFilter.valueFilter.toLowerCase())
+    const filteredData = data.filter(i => i[state.formFilter.colFilter].toLowerCase() === state.formFilter.valueFilter.toLowerCase());
+    state.pagination.total_elements = filteredData.length;
+    state.pagination.total_pages = Math.ceil(filteredData.length / state.limit);
+    return filteredData;
   }
   if (state.formFilter.typeFilter === "contains") {
-    console.log(data)
-    return data.filter(i => {
-      console.log(i)
-      return i[state.formFilter.colFilter].toLowerCase().contains(state.formFilter.valueFilter.toLowerCase())
-    })
+    const filteredData = data.filter(i =>  i[state.formFilter.colFilter].toLowerCase().includes(state.formFilter.valueFilter.toLowerCase()));
+    state.pagination.total_elements = filteredData.length;
+    state.pagination.total_pages = Math.ceil(filteredData.length / state.limit);
+    return filteredData;
+  }
+}
+
+function filterByDate(data) {
+  const filterDate = new Date(state.formFilter.valueFilter).getTime();
+  if (state.formFilter.typeFilter === "equally") {
+    const filteredData = data.filter(i => {
+      return new Date(i.date).getTime() === filterDate;
+    });
+    state.pagination.total_elements = filteredData.length;
+    state.pagination.total_pages = Math.ceil(filteredData.length / state.limit);
+    return filteredData;
+  }
+  if (state.formFilter.typeFilter === "more") {
+    const filteredData = data.filter(i => {
+      return new Date(i.date).getTime() > filterDate;
+    });
+    state.pagination.total_elements = filteredData.length;
+    state.pagination.total_pages = Math.ceil(filteredData.length / state.limit);
+    return filteredData;
+  }
+  if (state.formFilter.typeFilter === "less") {
+    const filteredData = data.filter(i => {
+      return new Date(i.date).getTime() < filterDate;
+    });
+    state.pagination.total_elements = filteredData.length;
+    state.pagination.total_pages = Math.ceil(filteredData.length / state.limit);
+    return filteredData;
   }
 }
 
@@ -97,17 +135,21 @@ function filterUpdate(data) {
     if (state.formFilter.colFilter === "distance") {
       return filterByInteger(data);
     }
+    if (state.formFilter.colFilter === "date") {
+      return filterByDate(data);
+    }
   } else {
+    state.pagination.total_elements = data.length;
+    state.pagination.total_pages = Math.ceil(data.length / state.limit);
     return data;
   }
 }
 
 function submitFilter(event) {
-  console.log(event);
   state.formFilter.colFilter = event.colFilter;
   state.formFilter.typeFilter = event.typeFilter;
   state.formFilter.valueFilter = event.valueFilter;
-  updateElement(state.pagination.current_page, state.tableData, { column: state.sortCol, order: state.order });
+  state.filteredTableData = updateElement(state.pagination.current_page, state.tableData, { column: state.sortCol, order: state.order });
 }
 
 function orderUpdate(event, data) {
