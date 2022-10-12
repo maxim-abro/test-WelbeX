@@ -1,6 +1,6 @@
 <template>
 <form @submit.prevent="submitForm" class="flex gap-8 mb-10">
-  <select v-model="formFilter.colFilter" name="column" class="w-1/46 border border-2 border-gray-300">
+  <select @change="validateForm" v-model="formFilter.colFilter" name="column" class="w-1/46 border border-2 border-gray-300">
     <option value="" disabled selected>Выберите колонку</option>
     <option v-for="col of columns" :key="col.value" :value="col.value">{{ col.title }}</option>
   </select>
@@ -8,9 +8,9 @@
     <option value="" disabled selected>Выберите тип фильтрации</option>
     <option v-for="filter of computedType" :value="filter.value">{{ filter.title }}</option>
   </select>
-  <input v-model="formFilter.valueFilter" :type="formFilter.colFilter !== 'date' ? 'search' : 'date'" class="w-1/6 border border-2 border-gray-300 focus:outline-0 focus:border-green-600" placeholder="Введите значение">
+  <input @input="validateForm" v-model="formFilter.valueFilter" :type="formFilter.colFilter !== 'date' ? 'search' : 'date'" class="w-1/6 border border-2 border-gray-300 focus:outline-0 focus:border-green-600" placeholder="Введите значение">
 
-  <button type="submit" class="w-1/8 bg-green-600 text-zinc-50 px-2 hover:bg-green-500 active:bg-green-700">Фильтрация</button>
+  <button :disabled="!isFullForm" type="submit" class="w-1/8 bg-green-600 text-zinc-50 px-2 hover:bg-green-500 active:bg-green-700">Фильтрация</button>
   <button v-if="formFilter.colFilter || formFilter.typeFilter || formFilter.valueFilter" @click="clearFilter" class="w-1/8 bg-zinc-600 text-zinc-50 px-2 hover:bg-zinc-500 active:bg-zinc-700">Очистить</button>
 </form>
 </template>
@@ -87,12 +87,18 @@ const computedType = computed(() => {
   return formFilter.value.colFilter ? typeFilters.value.filter(i => i.for.join(",").includes(formFilter.value.colFilter)) : []
 });
 
-const validateForm = computed(() => {
+const isFullForm = computed(() => {
   return formFilter.value.colFilter && formFilter.value.typeFilter && formFilter.value.valueFilter;
 });
 
+function validateForm() {
+  if (formFilter.value.colFilter === "count" || formFilter.value.colFilter === "distance") {
+    formFilter.value.valueFilter = formFilter.value.valueFilter.replace(/[^0-9]/gi, "")
+  }
+}
+
 function submitForm() {
-  if (validateForm.value) {
+  if (isFullForm.value) {
     emit('submitFilter', formFilter.value);
   }
 }

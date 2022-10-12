@@ -1,29 +1,31 @@
-# test-WelbeX
+# Тестовое задание WelbeX
 
-This template should help get you started developing with Vue 3 in Vite.
+### В проекте использовались библиотеки:
+1. Vue 3 - фреймворк для создания реактивных веб-приложений;
+2. axios - для отправки http запросов;
+3. tailwind - css фреймворк.
 
-## Recommended IDE Setup
+## Как запустить проект
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
+### Установить все зависимости.
 ```sh
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+
+### Запустить в режиме разработки.
 
 ```sh
 npm run dev
 ```
 
-### Compile and Minify for Production
+### Запустить создание сборки приложения для продакшна.
 
 ```sh
 npm run build
 ```
+
+
+## Автор
+### Абросимов Максим <maxim.abro@yandex.ru>

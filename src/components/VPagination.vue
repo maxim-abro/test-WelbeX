@@ -6,7 +6,6 @@
           <span class="sr-only">Previous</span>
           &lt;
         </a>
-        <!-- Current: "z-10 bg-indigo-50 border-indigo-500 text-indigo-600", Default: "bg-white border-gray-300 text-gray-500 hover:bg-gray-50" -->
 
         <template v-for="page in pages" :key="page">
           <a v-if="page < innerSelected+5 && page > innerSelected-5"
@@ -16,8 +15,6 @@
              class="relative inline-flex items-center border px-4 py-2 text-sm font-medium focus:z-20">
             {{ page }}</a>
         </template>
-
-        <!--      <span class="relative inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700">...</span>-->
 
         <a href="#" class="relative inline-flex items-center border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20">
           <span class="sr-only">Next</span>
@@ -29,9 +26,9 @@
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits } from "vue";
+import {ref, defineProps, defineEmits, watch} from "vue";
 
-defineProps({
+const props = defineProps({
   pages: {
     type: Number,
      required: true,
@@ -53,6 +50,11 @@ defineProps({
 const emit = defineEmits(["update:modelValue"]);
 
 const innerSelected = ref(1);
+
+watch(() => props.modelValue, () => {
+  console.log("12")
+  emit('update:modelValue');
+});
 
 function handlePageSelected(selected){
   if (innerSelected === selected) return

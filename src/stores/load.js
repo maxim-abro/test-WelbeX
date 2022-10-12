@@ -1,13 +1,13 @@
 import { defineStore } from "pinia";
 
 export const useLoadStore = defineStore({
-  id: "load",
+  id: "loader",
   state: () => ({
     isLoad: false,
   }),
   getters: {},
   actions: {
-    handleLoad() {
+    toggleLoader() {
       this.isLoad = !this.isLoad;
     },
   },

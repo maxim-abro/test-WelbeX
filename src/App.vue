@@ -1,5 +1,6 @@
 <template>
   <div class="container mx-auto pt-10">
+    <h1 class="text-6xl font-bold mx-auto text-center mb-20">Тестовое задание WelbeX</h1>
     <v-filter
       @submitFilter="submitFilter"
     />
@@ -10,7 +11,7 @@
       @sort="state.filteredTableData = updateElement(state.pagination.current_page, state.tableData, $event)"
     />
     <v-pagination
-      v-if="state.pagination"
+      v-if="state.pagination && state.filteredTableData.length"
       :v-model="state.pagination.current_page"
       :pages="state.pagination.total_pages"
       @update:modelValue="state.filteredTableData = updateElement($event, state.tableData, {column: state.sortCol, order: state.order})"
@@ -30,7 +31,7 @@ import VFilter from "@/components/VFilter.vue";
 import api from "@/modules/api";
 import {onMounted, reactive, computed} from "vue";
 import { useLoadStore } from "@/stores/load";
-const load = useLoadStore();
+const loader = useLoadStore();
 
 const state = reactive({
   tableData: [],
@@ -51,13 +52,13 @@ const state = reactive({
 });
 
 onMounted(async () => {
-  load.handleLoad();
+  loader.toggleLoader();
   const { data } = await api.get("/table/");
   state.tableData = data;
   state.pagination.total_pages = Math.ceil(data.length / state.limit);
   state.pagination.total_elements = data.length;
   state.filteredTableData = updateElement(state.pagination.current_page, state.tableData, {column: state.sortCol, order: state.order});
-  load.handleLoad();
+  loader.toggleLoader();
 });
 
 function filterByInteger(data) {
@@ -81,7 +82,7 @@ function filterByInteger(data) {
   }
 }
 
-function filterByString(data) { // работает
+function filterByString(data) {
   if (state.formFilter.typeFilter === "equally") {
     const filteredData = data.filter(i => i[state.formFilter.colFilter].toLowerCase() === state.formFilter.valueFilter.toLowerCase());
     state.pagination.total_elements = filteredData.length;
@@ -149,7 +150,7 @@ function submitFilter(event) {
   state.formFilter.colFilter = event.colFilter;
   state.formFilter.typeFilter = event.typeFilter;
   state.formFilter.valueFilter = event.valueFilter;
-  state.filteredTableData = updateElement(state.pagination.current_page, state.tableData, { column: state.sortCol, order: state.order });
+  state.filteredTableData = updateElement(1, state.tableData, { column: state.sortCol, order: state.order });
 }
 
 function orderUpdate(event, data) {
@@ -183,8 +184,10 @@ function paginationUpdate(page, data) {
 }
 
 function updateElement(page, data, event) {
+  loader.toggleLoader();
   const resultFilter = filterUpdate(data);
   const resultSort = orderUpdate(event, resultFilter);
+  loader.toggleLoader();
   return paginationUpdate(page || 1, resultSort);
 }
 </script>

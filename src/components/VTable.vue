@@ -1,5 +1,5 @@
 <template>
-  <table class="min-w-full mx-auto divide-y divide-gray-100 shadow-sm border-gray-200 border">
+  <table v-if="tableData.length" class="min-w-full mx-auto divide-y divide-gray-100 shadow-sm border-gray-200 border">
     <thead>
     <tr>
       <th
@@ -30,6 +30,8 @@
     </tr>
     </tbody>
   </table>
+
+  <h2 v-if="!tableData.length" class="text-3xl font-bold">Ничего не найдено!</h2>
 </template>
 
 <script setup>
